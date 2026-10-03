@@ -1,0 +1,28 @@
+pre-commit:
+  parallel: true
+  jobs:
+    - name: format
+      glob: "*.go"
+      run: gofumpt -l -w {staged_files}
+      stage_fixed: true
+    - name: lint
+      glob: "*.go"
+      run: golangci-lint run
+    - name: tidy
+      glob: "go.{mod,sum}"
+      run: go mod tidy -diff
+
+pre-push:
+  jobs:
+    - name: test
+      run: go test -race -count=1 ./...
+
+ci:
+  parallel: true
+  jobs:
+    - name: format
+      run: test -z "$(gofumpt -l .)" || { gofumpt -l .; exit 1; }
+    - name: lint
+      run: golangci-lint run
+    - name: tidy
+      run: go mod tidy -diff
