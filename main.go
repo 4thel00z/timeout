@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"runtime/debug"
 	"syscall"
 	"time"
 )
@@ -85,7 +86,7 @@ func parseOptions(args []string, stderr io.Writer) (options, error) {
 		return options{}, err
 	}
 	if showVersion {
-		fmt.Fprintf(flags.Output(), "timeout %s\n", version)
+		fmt.Fprintf(flags.Output(), "timeout %s\n", resolvedVersion())
 		return options{}, flag.ErrHelp
 	}
 	if flags.NArg() < 2 {
@@ -104,6 +105,17 @@ func parseOptions(args []string, stderr io.Writer) (options, error) {
 	}
 	opts.command = flags.Args()[1:]
 	return opts, nil
+}
+
+func resolvedVersion() string {
+	if version != "dev" {
+		return version
+	}
+	info, ok := debug.ReadBuildInfo()
+	if !ok || info.Main.Version == "" || info.Main.Version == "(devel)" {
+		return version
+	}
+	return info.Main.Version
 }
 
 func printUsage(w io.Writer) {
