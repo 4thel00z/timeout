@@ -22,6 +22,12 @@ macOS doesn't come with `timeout`. You can get it from Homebrew's `coreutils`, b
 
 ## Install
 
+**Homebrew:**
+
+```sh
+brew install 4thel00z/tap/timeout
+```
+
 **Prebuilt binary** (Apple Silicon, Intel, or universal):
 
 ```sh
