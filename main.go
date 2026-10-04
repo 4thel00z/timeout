@@ -168,7 +168,9 @@ func supervise(opts options, stderr io.Writer) int {
 	deadline := afterOrNever(opts.duration)
 	var killDeadline <-chan time.Time
 	timedOut := false
+	killed := false
 	send := func(sig syscall.Signal) {
+		killed = killed || sig == syscall.SIGKILL
 		if opts.verbose {
 			fmt.Fprintf(stderr, "timeout: sending signal %s to command '%s'\n", signalName(sig), opts.command[0])
 		}
@@ -187,7 +189,7 @@ func supervise(opts options, stderr io.Writer) int {
 	for {
 		select {
 		case <-done:
-			return exitStatus(cmd.ProcessState, timedOut, opts.preserveStatus)
+			return exitStatus(cmd.ProcessState, timedOut, killed, opts.preserveStatus)
 		case sig := <-incoming:
 			send(sig.(syscall.Signal))
 			armKill()
@@ -225,13 +227,13 @@ func startFailureCode(err error) int {
 	return exitCannotInvoke
 }
 
-func exitStatus(state *os.ProcessState, timedOut, preserveStatus bool) int {
+func exitStatus(state *os.ProcessState, timedOut, killed, preserveStatus bool) int {
+	if killed {
+		return exitSignalBase + int(syscall.SIGKILL)
+	}
 	status, ok := state.Sys().(syscall.WaitStatus)
 	if !ok {
 		return exitFailure
-	}
-	if status.Signaled() && status.Signal() == syscall.SIGKILL {
-		return exitSignalBase + int(syscall.SIGKILL)
 	}
 	if timedOut && !preserveStatus {
 		return exitTimedOut

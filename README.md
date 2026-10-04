@@ -83,7 +83,7 @@ timeout -v 3 sleep 10                       # print each signal as it is sent
 | `125` | `timeout` itself failed (bad flag, bad duration, bad signal). |
 | `126` | The command exists but could not be run. |
 | `127` | The command was not found. |
-| `137` | The command was killed with `KILL`. |
+| `137` | `timeout` sent `KILL` (through `-s KILL` or `-k`), or something else killed the command with `KILL`. |
 | other | The command's own exit status, or `128 + N` if signal `N` terminated it. |
 
 ## How it works
