@@ -101,7 +101,7 @@ make check    # format check + lint + tidy + tests, the same as CI
 | `make build` | Build `bin/timeout` |
 | `make test` | Run the tests with the race detector |
 | `make fmt` / `make lint` | Format / lint |
-| `make demo` | Record `assets/demo.gif` (needs [vhs](https://github.com/charmbracelet/vhs) and ffmpeg) |
+| `make demo` | Record `assets/demo.gif` with [vhs](https://github.com/charmbracelet/vhs) (needs ttyd and ffmpeg) |
 | `make snapshot` | Build a local release with [GoReleaser](https://goreleaser.com) |
 
 Hooks: `pre-commit` formats staged files, lints and checks `go.mod`. `pre-push` runs the tests.

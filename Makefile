@@ -5,6 +5,7 @@ LDFLAGS := -s -w -X main.version=$(VERSION)
 GOLANGCI_LINT_VERSION := v2.12.2
 GOFUMPT_VERSION       := v0.10.0
 LEFTHOOK_VERSION      := v1.13.6
+VHS_VERSION           := v0.12.1
 
 .DEFAULT_GOAL := help
 
@@ -48,14 +49,8 @@ hooks: ## Install the git hooks
 	lefthook install
 
 .PHONY: demo
-demo: build ## Record assets/demo.gif with vhs and ffmpeg
-	rm -rf .demo-frames
-	PATH="$(CURDIR)/bin:$$PATH" vhs assets/demo.tape
-	ffmpeg -y -loglevel error -framerate 50 \
-		-i .demo-frames/frame-text-%05d.png -i .demo-frames/frame-cursor-%05d.png \
-		-filter_complex "[0][1]overlay,pad=iw+48:ih+48:24:24:color=0x1e1e2e,fps=20,split[a][b];[a]palettegen=stats_mode=diff[p];[b][p]paletteuse=dither=none" \
-		assets/demo.gif
-	rm -rf .demo-frames
+demo: build ## Record assets/demo.gif (needs ttyd and ffmpeg)
+	PATH="$(CURDIR)/bin:$$PATH" go run github.com/charmbracelet/vhs@$(VHS_VERSION) assets/demo.tape
 
 .PHONY: snapshot
 snapshot: ## Build a local release snapshot with goreleaser
