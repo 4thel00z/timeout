@@ -40,3 +40,29 @@ changelog:
       - "^docs:"
       - "^test:"
       - "^chore:"
+
+homebrew_casks:
+  - name: timeout
+    binaries:
+      - timeout
+    repository:
+      owner: 4thel00z
+      name: homebrew-tap
+      branch: main
+      git:
+        url: git@github.com:4thel00z/homebrew-tap.git
+        private_key: "{{ .Env.HOMEBREW_TAP_DEPLOY_KEY }}"
+    directory: Casks
+    homepage: https://github.com/4thel00z/timeout
+    description: GNU-compatible timeout for macOS
+    license: MIT
+    commit_author:
+      name: 4thel00z
+      email: 4thel00z@gmail.com
+    commit_msg_template: "chore: timeout {{ .Tag }}"
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/timeout"]
+          end

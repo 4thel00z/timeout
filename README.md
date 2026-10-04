@@ -108,7 +108,7 @@ Hooks: `pre-commit` formats staged files, lints and checks `go.mod`. `pre-push` 
 
 ### Releasing
 
-Push a `v*` tag. The release workflow runs GoReleaser, which builds darwin `amd64`, `arm64` and universal binaries and publishes them with checksums.
+Push a `v*` tag. The release workflow runs GoReleaser, which builds darwin `amd64`, `arm64` and universal binaries, publishes them with checksums, and updates the cask in [4thel00z/homebrew-tap](https://github.com/4thel00z/homebrew-tap).
 
 ```sh
 git tag v0.1.0 && git push origin v0.1.0
