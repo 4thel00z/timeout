@@ -5,7 +5,6 @@ LDFLAGS := -s -w -X main.version=$(VERSION)
 GOLANGCI_LINT_VERSION := v2.12.2
 GOFUMPT_VERSION       := v0.10.0
 LEFTHOOK_VERSION      := v1.13.6
-VHS_VERSION           := v0.12.1
 
 .DEFAULT_GOAL := help
 
@@ -49,8 +48,9 @@ hooks: ## Install the git hooks
 	lefthook install
 
 .PHONY: demo
-demo: build ## Record assets/demo.gif (needs ttyd and ffmpeg)
-	PATH="$(CURDIR)/bin:$$PATH" go run github.com/charmbracelet/vhs@$(VHS_VERSION) assets/demo.tape
+demo: build ## Record assets/demo.gif with asciinema and agg
+	PATH="$(CURDIR)/bin:$$PATH" asciinema rec --overwrite -q --cols 84 --rows 17 -c "bash assets/demo.sh" assets/demo.cast
+	agg --font-size 20 --theme dracula --last-frame-duration 3 assets/demo.cast assets/demo.gif
 
 .PHONY: snapshot
 snapshot: ## Build a local release snapshot with goreleaser
